@@ -19,7 +19,8 @@
             echo '<meta http-equiv="refresh" content="10">';
         }
     }else{
-        echo "no ip was set";
+        echo "no ip was set <br />";
+        echo "please use '?ip=<serverip>' at the end of the url<br />";
         exit();
     }
 	
