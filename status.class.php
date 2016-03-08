@@ -37,6 +37,7 @@
                 $ping = round((microtime(true)-$start)*1000); //calculate the high five duration
                 $packetlength = $this->read_packet_length($socket);
                 if($packetlength < 10) {
+                // if($packetlength < 0) {
                     return false;
                 }
                 socket_read($socket, 1);
@@ -49,25 +50,37 @@
                 $serverdata['version'] = $data->version->name;
                 $serverdata['protocol'] = $data->version->protocol;
                 $serverdata['players'] = $data->players->online;
+                $serverdata['data'] = $data;
                 $serverdata['maxplayers'] = $data->players->max;
                 if(!empty($data->players->sample)){
                     for($i = 0; $plist = $data->players->sample[$i]->name; $i++){
                         if($i == $serverdata['players']-1){
-                            $serverdata['playerlist'] .= "name: " . $plist . " uuid: " . $data->players->sample[$i]->id . " <br />";
+                            $serverdata['playerlist'] .= "name: <strong>" . $plist . "</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uuid: <strong>" . $data->players->sample[$i]->id . "</strong> <br />";
                             break;
+                        }else if($i == 11){
+                            $serverdata['playerlist'] .= "name: <strong>" . $plist . "</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uuid: <strong>" . $data->players->sample[$i]->id . "</strong> <br />";
+                            $serverdata['playerlist'] .= "--- and  <strong>" . ($serverdata['players']-12) . "</strong> more ---<br />";
+                            break;
+                        }else if($serverdata['players'] == 0){
+                            $serverdata['playerlist'] = "It looks like nobody is online right now!";
                         }
-                            $serverdata['playerlist'] .= "name: " . $plist . " uuid: " . $data->players->sample[$i]->id . " <br />";
+                            $serverdata['playerlist'] .= "name: <strong>" . $plist . "</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uuid: <strong>" . $data->players->sample[$i]->id . "</strong> <br />";
                     }
                 }else{
                     $serverdata['playerlist'] = "Unfortunately, this server is hiding their player list.";
                 }
-                
+                // $serverdata['playerlist'] = $data->players;
                 $motd = $data->description;
                 $motd = preg_replace("/(§.)/", "",$motd);
                 $motd = preg_replace("/[^[:alnum:][:punct:] ]/", "", $motd);
                 $serverdata['motd'] = $motd;
                 $serverdata['motd_raw'] = $data->description;
-                $serverdata['favicon'] = $data->favicon;
+                //$serverdata['favicon'] = $data->favicon;
+                if(empty($data->favicon)){
+                    $serverdata['favicon'] = "duncte123s-face.png";
+                }else{
+                    $serverdata['favicon'] = $data->favicon;
+                }
                 $serverdata['ping'] = $ping;
             } else {
                 $start = microtime(true);

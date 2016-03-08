@@ -15,12 +15,14 @@
             echo "The server has a ping of <strong>".$response['ping']. "</strong> milliseconds <br />";
             echo "<br />";
             echo "<br />";
+            // print_r($response['playerlist']);
             echo $response['playerlist'];
+            // print_r($response['data']);
             echo '<meta http-equiv="refresh" content="10">';
         }
     }else{
         echo "no ip was set <br />";
-        echo "please use '?ip=<serverip>' at the end of the url<br />";
+        echo "please use '?ip=&lt;serverip&gt;' at the end of the url<br />";
         exit();
     }
 	
