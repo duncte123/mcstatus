@@ -36,7 +36,7 @@ function fetchData (ip, port, version) {
             <br />
             `;
 
-        if (data.players) {
+        if (data.playerlist) {
           output += `<p>Player list:</p>
             <br /><br />`;
           for (let player of data.playerlist) {

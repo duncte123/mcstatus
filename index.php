@@ -36,7 +36,7 @@ if (isset($_GET['version']) && !empty($_GET['version'])) {
         </style>
     </head>
     <body>
-        <div id="app"></div>
+        <div id="app">Loading.....</div>
         <script src="/app.js"></script>
         <script>
           document.addEventListener("DOMContentLoaded", () => {
