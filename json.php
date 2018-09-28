@@ -41,7 +41,7 @@ respond([
     'players' => $response['players'],
     'playerlist' => $response['playerlist'],
     'maxplayers' => $response['max_players'],
-    'motd' => $response['description'],
+    'motd' => $response['description_parsed'],
     'motd_raw' => $response['description_raw'],
     'img' => isset($_GET['show_img']) && !empty($_GET['show_img']) && ($_GET['show_img'] == "true")
         ? $response['favicon'] : "IMAGE HIDDEN",

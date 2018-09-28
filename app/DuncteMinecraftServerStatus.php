@@ -2,6 +2,7 @@
 
 namespace DuncteMinecraftServerStatus;
 
+use MinecraftServerStatus\MinecraftServerStatus;
 use MinecraftServerStatus\Packets\HandshakePacket;
 use MinecraftServerStatus\Packets\PingPacket;
 
@@ -98,14 +99,14 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
             'playerlist' => $onlinePlayers,
             'max_players' => $data->players->max ?? false,
             'description' => $description,
-//            'description_parsed' => $this->cleanMotd($descriptionRaw),
+            'description_parsed' => $this->cleanMotd($descriptionRaw),
             'description_raw' => $descriptionRaw,
             'favicon' => $data->favicon ?? false,
             'modinfo' => $data->modinfo ?? false,
         ];
     }
 
-    private function readVarInt($socket)
+    private static function readVarInt($socket)
     {
         $a = 0;
         $b = 0;
