@@ -33,8 +33,14 @@ function fetchData (ip, port, version) {
             <p>There currently are <strong>${data.players}</strong> out of a maximum <strong>${data.maxplayers}</strong> online.</p>
             <p>The server has a ping of <strong>${data.ping}ms</strong> (measured from europe).</p>
             <p>The MOTD of the server is <strong>${data.motd}</strong></p>
+            <br />
+            <p>Player list:</p>
             <br /><br />
             `;
+
+        for(let player of data.playerlist) {
+          output += `Name: <strong>${player.name}</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UUID: <strong>${player.uuid}</strong> <br />`;
+        }
 
         _("#app").innerHTML = output;
 
