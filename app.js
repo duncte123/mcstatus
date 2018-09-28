@@ -20,8 +20,8 @@ function fetchData (ip, port, version) {
       .join('&');
 
   fetch(`/json/${ip}?${query}`)
-      .then((r) => {
-        const data = r.json();
+      .then((r) => r.json())
+      .then((data) => {
         if(!data.success) {
           _("#app").innerHTML = `<h1>Error: ${data.error_msg}</h1>`;
           return;
