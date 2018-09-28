@@ -1,5 +1,7 @@
 <?php
+
 namespace MinecraftServerStatus;
+
 use MinecraftServerStatus\Packets\HandshakePacket;
 use MinecraftServerStatus\Packets\PingPacket;
 
@@ -30,7 +32,7 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
         $host = filter_var($host, FILTER_VALIDATE_IP) ? $host : gethostbyname($host);
 
         $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        if (! @socket_connect($socket, $host, $port)) {
+        if (!@socket_connect($socket, $host, $port)) {
             return false;
         }
 
@@ -43,7 +45,7 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
         // high five
         $start = microtime(true);
         $pingPacket->send($socket);
-        $length = self::readVarInt($socket);
+        $length = $this->readVarInt($socket);
         $ping = round((microtime(true) - $start) * 1000);
 
         // read the requested data
@@ -60,13 +62,13 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
 
             if (isset($descriptionRaw->text)) {
                 $color = isset($descriptionRaw->color) ? $descriptionRaw->color : '';
-                $description = '<span style="color: ' . $color . ';">' . $descriptionRaw->text . '</span>';
+                $description = '<span style="color: '.$color.';">'.$descriptionRaw->text.'</span>';
             }
 
             if (isset($descriptionRaw->extra)) {
                 foreach ($descriptionRaw->extra as $item) {
                     $description .= isset($item->bold) && $item->bold ? '<b>' : '';
-                    $description .= isset($item->color) ? '<span style="color: ' . $item->color . ';">' . $item->text . '</span>' : '';
+                    $description .= isset($item->color) ? '<span style="color: '.$item->color.';">'.$item->text.'</span>' : '';
                     $description .= isset($item->bold) && $item->bold ? '</b>' : '';
                 }
             }
@@ -86,7 +88,7 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
             $onlinePlayers = false;
         }
 
-        return array(
+        return [
             'hostname' => $host,
             'port' => $port,
             'ping' => $ping,
@@ -99,22 +101,21 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
             'description_parsed' => $this->cleanMotd($descriptionRaw),
             'description_raw' => $descriptionRaw,
             'favicon' => $data->favicon ?? false,
-            'modinfo' => $data->modinfo ?? false
-        );
-
-
+            'modinfo' => $data->modinfo ?? false,
+        ];
     }
 
-    private function readVarInt ($socket) {
+    private function readVarInt($socket)
+    {
         $a = 0;
         $b = 0;
         while (true) {
             $c = socket_read($socket, 1);
-            if (! $c) {
+            if (!$c) {
                 return 0;
             }
             $c = Ord($c);
-            $a |= ($c & 0x7F) << $b ++ * 7;
+            $a |= ($c & 0x7F) << $b++ * 7;
             if ($b > 5) {
                 return false;
             }
@@ -122,6 +123,7 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
                 break;
             }
         }
+
         return $a;
     }
 
