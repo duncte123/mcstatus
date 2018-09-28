@@ -65,7 +65,7 @@ class MinecraftServerStatus
                 array_push($playersArray, ['It looks like nobody is online right now!']);
             } else */
 
-            if (isset($data->players->sample) && !empty($data->players->sample)) {
+            if (isset($data->players) && !empty($data->players->sample)) {
 //                for ($i = 0; $plist = $data->players->sample[$i]->name; $i++) {
                 foreach ($data->players->sample as $player) {
 
