@@ -10,11 +10,11 @@
         public function __construct($timeout = 2) {
             $this->timeout = $timeout;
         }
-        // public function getStatus($host = '127.0.0.1', $port = 25565, $version = '1.7.*') {
         public function getStatus($host = '127.0.0.1', $port = 25565, $version = '1.8.*') {
             if (substr_count($host , '.') != 4) $host = gethostbyname($host);
             $serverdata = array();
             $serverdata['hostname'] = $host;
+            $serverdata['hostnameRaw'] = $host;
             $serverdata['version'] = false;
             $serverdata['protocol'] = false;
             $serverdata['players'] = false;
@@ -28,7 +28,7 @@
             if(!$socket) {
                 return false;
             }
-            if(preg_match('/1.7|1.8|1.9/',$version)) {
+            if(preg_match('/1.7|1.8|1.9|1.10|1.11|1.12/',$version)) {
                 $start = microtime(true);
                 $handshake = pack('cccca*', hexdec(strlen($host)), 0, 0x04, strlen($host), $host).pack('nc', $port, 0x01);
                 socket_send($socket, $handshake, strlen($handshake), 0); //give the server a high five
@@ -52,29 +52,46 @@
                 $serverdata['players'] = $data->players->online;
                 $serverdata['data'] = $data;
                 $serverdata['maxplayers'] = $data->players->max;
-                if(!empty($data->players->sample)){
+                if($serverdata['players'] == 0){
+                    $serverdata['playerlist'] = "It looks like nobody is online right now!";
+                }else if(isset($data->players->sample) || !empty($data->players->sample)){
                     for($i = 0; $plist = $data->players->sample[$i]->name; $i++){
+                        $color = '#ffffff';
+                        if($plist == "duncte123"){
+                            $color = '#ff0000';
+                        }elseif($plist == "itzMineh"){
+                            $color = "#b3b300";
+                        }
                         if($i == $serverdata['players']-1){
-                            $serverdata['playerlist'] .= "name: <strong>" . $plist . "</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uuid: <strong>" . $data->players->sample[$i]->id . "</strong> <br />";
+                            $serverdata['playerlist'] .= "name: <strong><font color='" . $color . "'>" . $plist . "</font></strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uuid: <strong>" . $data->players->sample[$i]->id . "</strong> <br />";
                             break;
-                        }else if($i == 11){
-                            $serverdata['playerlist'] .= "name: <strong>" . $plist . "</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uuid: <strong>" . $data->players->sample[$i]->id . "</strong> <br />";
+                        }else if($i == 11 && empty($data->players->sample[12]->name)){
+                            $serverdata['playerlist'] .= "name: <strong><font color='" . $color . "'>" . $plist . "</font></strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uuid: <strong>" . $data->players->sample[$i]->id . "</strong> <br />";
                             $serverdata['playerlist'] .= "--- and  <strong>" . ($serverdata['players']-12) . "</strong> more ---<br />";
                             break;
                         }else if($serverdata['players'] == 0){
                             $serverdata['playerlist'] = "It looks like nobody is online right now!";
+                            break;
                         }
-                            $serverdata['playerlist'] .= "name: <strong>" . $plist . "</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uuid: <strong>" . $data->players->sample[$i]->id . "</strong> <br />";
+                        $serverdata['playerlist'] .= "name: <strong><font color='" . $color . "'>" . $plist . "</font></strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uuid: <strong>" . $data->players->sample[$i]->id . "</strong> <br />";
                     }
                 }else{
                     $serverdata['playerlist'] = "Unfortunately, this server is hiding their player list.";
                 }
                 // $serverdata['playerlist'] = $data->players;
-                $motd = $data->description;
-                $motd = preg_replace("/(§.)/", "",$motd);
+                if(!isset($data->description->text) && empty($data->description->text)){
+                    $motd = $data->description;
+                    $motd2 = $data->description;
+                }else{
+                    $motd = $data->description->text;
+                    $motd2 = $data->description->text;
+                }
+
+                $motd = preg_replace("/(§.)/", "", $motd);
                 $motd = preg_replace("/[^[:alnum:][:punct:] ]/", "", $motd);
                 $serverdata['motd'] = $motd;
-                $serverdata['motd_raw'] = $data->description;
+                // $serverdata['motd_raw'] = $data->description;
+                $serverdata['motd_raw'] = $motd2;
                 //$serverdata['favicon'] = $data->favicon;
                 if(empty($data->favicon)){
                     $serverdata['favicon'] = "duncte123s-face.png";
@@ -87,7 +104,7 @@
                 socket_send($socket, "\xFE\x01", 2, 0);
                 $length = socket_recv($socket, $data, 512, 0);
                 $ping = round((microtime(true)-$start)*1000);//calculate the high five duration
-                
+
                 if($length < 4 || $data[0] != "\xFF") {
                     return false;
                 }
@@ -121,7 +138,8 @@
         }
         private function connect($host, $port) {
             $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-            if (!@socket_connect($socket, $host, $port)) {
+            // if (!@socket_connect($socket, $host, $port)) {
+            if (!socket_connect($socket, $host, $port)) {
         		$this->disconnect($socket);
         		return false;
     	    }
