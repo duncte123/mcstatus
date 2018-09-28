@@ -36,7 +36,3 @@ function fetchData (ip, port, version) {
       });
 
 }
-
-document.addEventListener("DOMDocumentLoaded", () => {
-
-});

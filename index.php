@@ -37,7 +37,11 @@ if (isset($_GET['version']) && !empty($_GET['version'])) {
     </head>
     <body>
         <div id="app"></div>
-
         <script src="/app.js"></script>
+        <script>
+          document.addEventListener("DOMDocumentLoaded", () => {
+            fetchData("<?php echo $ip; ?>", <?php echo $port; ?>, "<?php echo $version; ?>");
+          });
+        </script>
     </body>
 </html>
