@@ -5,12 +5,18 @@
         "php": "7.2.*",
         "ext-mbstring": "7.2.*",
         "ext-sockets": "7.2.*",
-        "ext-json": "^1.6"
+        "ext-json": "^1.6",
+        "funnyitselmo/minecraftserverstatus": "^1.0"
     },
     "authors": [
         {
             "name": "duncte123",
             "email": "duncan.sterken123@gmail.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "MinecraftServerStatus\\": "app/"
+        }
+    }
 }
