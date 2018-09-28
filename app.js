@@ -1,4 +1,12 @@
-const _ = (el) => document.querySelectorAll(el);
+function _(el) {
+  const elements = document.querySelectorAll(el);
+
+  if(elements.length === 1) {
+    return elements[0];
+  }
+
+  return elements;
+}
 
 function fetchData (ip, port, version) {
   const params = {
@@ -12,9 +20,8 @@ function fetchData (ip, port, version) {
       .join('&');
 
   fetch(`/json/${ip}?${query}`)
-      .then((r) => r.json())
-      .then((data) => {
-
+      .then((r) => {
+        const data = r.json();
         if(!data.success) {
           _("#app").innerHTML = `<h1>Error: ${data.error_msg}</h1>`;
           return;
