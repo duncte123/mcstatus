@@ -1,5 +1,5 @@
 <?php
-$ip = "";
+
 if (!isset($_GET['ip']) || empty($_GET['ip'])) {
 
     $output = "no ip was set <br />";
@@ -8,20 +8,13 @@ if (!isset($_GET['ip']) || empty($_GET['ip'])) {
 }
 
 $ip = $_GET['ip'];
-$port = 25565;
-$version = "1.8";
+$port = $_GET['port'] ?? 25565;
+$version = $_GET['version'] ?? "1.8";
 
 if (strpos($ip, ':') !== false) {
     $contend = explode(':', $ip);
     $ip = $contend[0];
     $port = $contend[1];
-}
-
-if (isset($_GET['port']) && !empty($_GET['port'])) {
-    $port = $_GET['port'];
-}
-if (isset($_GET['version']) && !empty($_GET['version'])) {
-    $version = $_GET['version'];
 }
 ?>
 <!DOCTYPE html>

@@ -1,6 +1,5 @@
 <?php
 use DuncteMinecraftServerStatus\DuncteMinecraftServerStatus;
-use MinecraftServerStatus\MinecraftServerStatus;
 
 require (__DIR__ . '/vendor/autoload.php');
 
