@@ -33,7 +33,7 @@ respond([
     'success' => true,
     'ip' => $ip.':'.$port,
     'hostname' => $response['hostname'],
-    'verson' => $response['version'],
+    'version' => $response['version'],
     'protocol' => $response['protocol'],
     'players' => $response['players'],
     'playerlist' => $response['playerlist'],
