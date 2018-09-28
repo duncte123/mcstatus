@@ -32,7 +32,7 @@ class MinecraftServerStatus
             return false;
         }
 
-        if (preg_match('/1.7|1.8|1.9|1.10|1.11|1.12/', $version)) {
+        if (preg_match('/1.7|1.8|1.9|1.10|1.11|1.12|1.13/', $version)) {
             $start = microtime(true);
             $handshake = pack('cccca*', hexdec(strlen($host)), 0, 0x04, strlen($host), $host).pack('nc', $port, 0x01);
             socket_send($socket, $handshake, strlen($handshake), 0); //give the server a high five
