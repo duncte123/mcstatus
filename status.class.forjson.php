@@ -61,22 +61,15 @@ class MinecraftServerStatus
             } else if (isset($data->players->sample) && !empty($data->players->sample)) {
 //                for ($i = 0; $plist = $data->players->sample[$i]->name; $i++) {
                 foreach ($data->players->sample as $player) {
-                    var_dump($player);
-                    die();
 
+                    if(empty($player)) continue;
 
-                    if ($i == $serverdata['players'] - 1) {
-                        array_push($playersArray, $this->formatPlayer($plist, $data->players->sample[$i]->id));
-                        break;
-                    } else if ($i == 11 && empty($data->players->sample[12]->name)) {
-                        array_push($playersArray, $this->formatPlayer($plist, $data->players->sample[$i]->id));
-                        array_push($playersArray, $this->formatPlayer("--- and ".($serverdata['players'] - 12)." more ---", 'null'));
-                        break;
-                    } else if ($serverdata['players'] == 0) {
+                    if ($serverdata['players'] == 0) {
                         array_push($playersArray, ["It looks like nobody is online right now!"]);
                         break;
                     }
-                    array_push($playersArray, $this->formatPlayer($plist, $data->players->sample[$i]->id));
+
+                    array_push($playersArray, $this->formatPlayer($player->name, $player->id));
                 }
             } else {
                 array_push($playersArray, ["Unfortunately, this server is hiding their player list."]);
@@ -96,9 +89,7 @@ class MinecraftServerStatus
             // $serverdata['motd_raw'] = $data->description;
             $serverdata['motd_raw'] = $motd2;
             //$serverdata['favicon'] = $data->favicon;
-            if (empty($data->favicon)) {
-                $serverdata['favicon'] = "duncte123s-face.png";
-            } else {
+            if (!empty($data->favicon)) {
                 $serverdata['favicon'] = $data->favicon;
             }
             $serverdata['ping'] = $ping;
@@ -112,7 +103,6 @@ class MinecraftServerStatus
                 return false;
             }
             $motd = "";
-            $motdraw = "";
             //Evaluate the received data
             if (substr((String) $data, 3, 5) == "\x00\xa7\x00\x31\x00") {
                 $result = explode("\x00", mb_convert_encoding(substr((String) $data, 15), 'UTF-8', 'UCS-2'));
