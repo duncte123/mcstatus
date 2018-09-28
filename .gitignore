@@ -1,0 +1,33 @@
+# IntelliJ IDEA
+/.idea
+
+# application
+/.version
+*.log
+
+# Database
+*.sql
+*.sqlite
+
+# Build directory
+/build
+
+# Laravel
+.env
+.env.local
+.env.backup
+/vendor
+/public/storage
+/public/vendor
+/storage/framework/cache
+/storage/api-docs/*
+/storage/debugbar
+/app/config/local
+
+*~
+*.swp
+.DS_STORE
+.php_cs.cache
+npm-debug.log
+yarn-error.log
+*.cache
