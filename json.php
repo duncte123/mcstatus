@@ -24,13 +24,13 @@ if (isset($_GET['ip']) && !empty($_GET['ip'])) {
     $status = new MinecraftServerStatus();
     $response = $status->getStatus($ip, $port, $version);
     if (!$response) {
-        array_merge($json, [
+        $json = array_merge($json, [
             'ip' => $ip.':'.$port,
             'error' => true,
             'error_msg' => 'Could not connect to server!',
         ]);
     } else {
-        array_merge($json, [
+        $json = array_merge($json, [
             'ip' => $ip.':'.$port,
             'hostname' => $response['hostname'],
             'verson' => $response['version'],
@@ -47,7 +47,7 @@ if (isset($_GET['ip']) && !empty($_GET['ip'])) {
         ]);
     }
 } else {
-    array_merge($json, [
+    $json = array_merge($json, [
         'error' => true,
         'error_msg' => 'no ip was set, please use \'?ip=SERVER_IP\' at the end of the url',
     ]);
