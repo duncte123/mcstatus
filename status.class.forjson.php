@@ -65,23 +65,20 @@ class MinecraftServerStatus
                 array_push($playersArray, ['It looks like nobody is online right now!']);
             } else */
 
-            var_dump($data->players);
-            die();
-            if (isset($data->players) && !empty($data->players->sample)) {
-                //                for ($i = 0; $plist = $data->players->sample[$i]->name; $i++) {
-                foreach ($data->players->sample as $player) {
+            foreach ($data->players->sample as $player) {
 
-                    if (empty($player)) continue;
+                if (empty($player)) continue;
 
-                    if ($serverdata['players'] == 0) {
-                        array_push($playersArray, ["It looks like nobody is online right now!"]);
-                        break;
-                    }
+                /*if ($serverdata['players'] == 0) {
+                    array_push($playersArray, ["It looks like nobody is online right now!"]);
+                    break;
+                }*/
 
-                    array_push($playersArray, $this->formatPlayer($player->name, $player->id));
-                }
-            } else if ($serverdata['players'] != 0) {
-                array_push($playersArray, "Unfortunately, this server is hiding their player list.");
+                array_push($playersArray, $this->formatPlayer($player->name, $player->id));
+            }
+
+            if (empty($data->players->sample) && $serverdata['players'] != 0) {
+                $playersArray = false;
             }
 
             $serverdata['playerlist'] = $playersArray;
