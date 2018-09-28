@@ -66,10 +66,10 @@ class MinecraftServerStatus
             } else */
 
             if (isset($data->players) && !empty($data->players->sample)) {
-//                for ($i = 0; $plist = $data->players->sample[$i]->name; $i++) {
+                //                for ($i = 0; $plist = $data->players->sample[$i]->name; $i++) {
                 foreach ($data->players->sample as $player) {
 
-                    if(empty($player)) continue;
+                    if (empty($player)) continue;
 
                     if ($serverdata['players'] == 0) {
                         array_push($playersArray, ["It looks like nobody is online right now!"]);
@@ -78,7 +78,7 @@ class MinecraftServerStatus
 
                     array_push($playersArray, $this->formatPlayer($player->name, $player->id));
                 }
-            } else {
+            } else if ($serverdata['players'] != 0) {
                 array_push($playersArray, "Unfortunately, this server is hiding their player list.");
             }
 
@@ -102,7 +102,6 @@ class MinecraftServerStatus
             }
 
             $serverdata['ping'] = $ping;
-
         } else {
             $start = microtime(true);
             socket_send($socket, "\xFE\x01", 2, 0);
