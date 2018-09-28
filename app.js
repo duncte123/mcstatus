@@ -1,7 +1,7 @@
-function _(el) {
+function _ (el) {
   const elements = document.querySelectorAll(el);
 
-  if(elements.length === 1) {
+  if (elements.length === 1) {
     return elements[0];
   }
 
@@ -22,8 +22,8 @@ function fetchData (ip, port, version) {
   fetch(`/json/${ip}?${query}`)
       .then((r) => r.json())
       .then((data) => {
-        if(!data.success) {
-          _("#app").innerHTML = `<h1>Error: ${data.error_msg}</h1>`;
+        if (!data.success) {
+          _("#app").innerHTML = `<h1>Error: <em>${data.error_msg}</em></h1>`;
           return;
         }
 
@@ -34,13 +34,17 @@ function fetchData (ip, port, version) {
             <p>The server has a ping of <strong>${data.ping}ms</strong> (measured from europe).</p>
             <p>The MOTD of the server is <strong>${data.motd}</strong></p>
             <br />
-            <p>Player list:</p>
-            <br /><br />
             `;
 
-        for(let player of data.playerlist) {
-          console.log(player);
-          output += `Name: <strong>${player.name}</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UUID: <strong>${player.uuid}</strong> <br />`;
+        if (data.players) {
+          output += `<p>Player list:</p>
+            <br /><br />`;
+          for (let player of data.playerlist) {
+            console.log(player);
+            output += `Name: <strong>${player.name}</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UUID: <strong>${player.uuid}</strong> <br />`;
+          }
+        } else {
+          output += '<p>This server is hiding their player list.</p>';
         }
 
         _("#app").innerHTML = output;

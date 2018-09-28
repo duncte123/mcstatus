@@ -2,7 +2,10 @@
     "name": "dunca/mctest-server_stats",
     "type": "project",
     "require": {
-        "php": "^7.2"
+        "php": "7.2.*",
+        "ext-mbstring": "7.2.*",
+        "ext-sockets": "7.2.*",
+        "ext-json": "^1.6"
     },
     "authors": [
         {

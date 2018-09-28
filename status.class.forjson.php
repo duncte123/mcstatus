@@ -4,27 +4,39 @@ class MinecraftServerStatus
 {
     private $timeout;
 
-    public function __construct($timeout = 2)
+    /**
+     * MinecraftServerStatus constructor.
+     *
+     * @param int $timeout
+     */
+    public function __construct(int $timeout = 2)
     {
         $this->timeout = $timeout;
     }
 
-    public function getStatus($host = '127.0.0.1', $port = 25565, $version = '1.8.*')
+    /**
+     * @param string $host
+     * @param int    $port
+     * @param string $version
+     *
+     * @return array|bool The array of data or false on failure
+     */
+    public function getStatus(string $host = '127.0.0.1', int $port = 25565, string $version = '1.8.*')
     {
         if (substr_count($host, '.') != 4) $host = gethostbyname($host);
 
-        $serverdata = [];
-        $serverdata['hostname'] = $host;
-        $serverdata['hostnameRaw'] = $host;
-        $serverdata['version'] = false;
-        $serverdata['protocol'] = false;
-        $serverdata['players'] = false;
-        $serverdata['playerlist'] = "";
-        $serverdata['maxplayers'] = false;
-        $serverdata['motd'] = false;
-        $serverdata['motd_raw'] = false;
-        $serverdata['favicon'] = false;
-        $serverdata['ping'] = false;
+        $serverData = [];
+        $serverData['hostname'] = $host;
+        $serverData['hostnameRaw'] = $host;
+        $serverData['version'] = false;
+        $serverData['protocol'] = false;
+        $serverData['players'] = false;
+        $serverData['playerlist'] = false;
+        $serverData['maxplayers'] = false;
+        $serverData['motd'] = false;
+        $serverData['motd_raw'] = false;
+        $serverData['favicon'] = null;
+        $serverData['ping'] = false;
 
         $socket = $this->connect($host, $port);
 
@@ -32,9 +44,13 @@ class MinecraftServerStatus
             return false;
         }
 
+        // Get the microtime for the ping
+        $start = microtime(true);
+
         if (preg_match('/1.7|1.8|1.9|1.10|1.11|1.12|1.13/', $version)) {
-            $start = microtime(true);
-            $handshake = pack('cccca*', hexdec(strlen($host)), 0, 0x04, strlen($host), $host).pack('nc', $port, 0x01);
+            $handshake = pack('cccca*', hexdec(strlen($host)),
+                    0, 0x04, strlen($host), $host).pack('nc', $port, 0x01);
+
             socket_send($socket, $handshake, strlen($handshake), 0); //give the server a high five
             socket_send($socket, "\x01\x00", 2, 0);
             socket_read($socket, 1);
@@ -54,56 +70,41 @@ class MinecraftServerStatus
             }
 
             $data = json_decode($data);
-            $serverdata['version'] = $data->version->name;
-            $serverdata['protocol'] = $data->version->protocol;
-            $serverdata['players'] = $data->players->online;
-            $serverdata['data'] = $data;
-            $serverdata['maxplayers'] = $data->players->max;
-            $playersArray = [];
+            $serverData['version'] = $data->version->name;
+            $serverData['protocol'] = $data->version->protocol;
+            $serverData['players'] = $data->players->online;
+            $serverData['data'] = $data;
+            $serverData['maxplayers'] = $data->players->max;
 
-            /*if ($serverdata['players'] == 0) {
-                array_push($playersArray, ['It looks like nobody is online right now!']);
-            } else */
+            $onlinePlayers = [];
 
             foreach ($data->players->sample as $player) {
 
                 if (empty($player)) continue;
 
-                /*if ($serverdata['players'] == 0) {
-                    array_push($playersArray, ["It looks like nobody is online right now!"]);
-                    break;
-                }*/
-
-                array_push($playersArray, $this->formatPlayer($player->name, $player->id));
+                array_push($onlinePlayers, $this->formatPlayer($player->name, $player->id));
             }
 
-            if (empty($data->players->sample) && $serverdata['players'] != 0) {
-                $playersArray = false;
+            if (empty($data->players->sample) && $serverData['players'] != 0) {
+                $onlinePlayers = false;
             }
 
-            $serverdata['playerlist'] = $playersArray;
+            $serverData['playerlist'] = $onlinePlayers;
 
-            if (!isset($data->description->text) || empty($data->description->text)) {
-                $motd = $data->description;
-                $motd2 = $data->description;
-            } else {
-                $motd = $data->description->text;
-                $motd2 = $data->description->text;
-            }
+            $motd = $data->description->text ?? $data->description;
 
-            $motd = preg_replace("/(§.)/", "", $motd);
-            $motd = preg_replace("/[^[:alnum:][:punct:] ]/", "", $motd);
-            $serverdata['motd'] = $motd;
-            $serverdata['motd_raw'] = $motd2;
+            $serverData['motd'] = $this->cleanMotd($motd);
+            $serverData['motd_raw'] = $motd;
 
             if (!empty($data->favicon)) {
-                $serverdata['favicon'] = $data->favicon;
+                $serverData['favicon'] = $data->favicon;
             }
 
-            $serverdata['ping'] = $ping;
+            $serverData['ping'] = $ping;
         } else {
-            $start = microtime(true);
+
             socket_send($socket, "\xFE\x01", 2, 0);
+
             $length = socket_recv($socket, $data, 512, 0);
             $ping = round((microtime(true) - $start) * 1000);//calculate the high five duration
 
@@ -111,35 +112,36 @@ class MinecraftServerStatus
                 return false;
             }
             $motd = "";
+
             //Evaluate the received data
             if (substr((String) $data, 3, 5) == "\x00\xa7\x00\x31\x00") {
-                $result = explode("\x00", mb_convert_encoding(substr((String) $data, 15), 'UTF-8', 'UCS-2'));
+                $result = explode("\x00", mb_convert_encoding(
+                    substr((String) $data, 15), 'UTF-8', 'UCS-2'));
                 $motd = $result[1];
-                $motdraw = $motd;
             } else {
-                $result = explode('§', mb_convert_encoding(substr((String) $data, 3), 'UTF-8', 'UCS-2'));
+                $result = explode('§', mb_convert_encoding(
+                    substr((String) $data, 3), 'UTF-8', 'UCS-2'));
+
                 foreach ($result as $key => $string) {
                     if ($key != sizeof($result) - 1 && $key != sizeof($result) - 2 && $key != 0) {
                         $motd .= '§'.$string;
                     }
                 }
-                $motdraw = $motd;
             }
-            $motd = preg_replace("/(§.)/", "", $motd);
-            $motd = preg_replace("/[^[:alnum:][:punct:] ]/", "", $motd); //Remove all special characters from a string
-            $serverdata['version'] = $result[0];
-            $serverdata['players'] = $result[sizeof($result) - 2];
-            $serverdata['maxplayers'] = $result[sizeof($result) - 1];
-            $serverdata['motd'] = $motd;
-            $serverdata['motd_raw'] = $motdraw;
-            $serverdata['ping'] = $ping;
+
+            $serverData['version'] = $result[0];
+            $serverData['players'] = $result[sizeof($result) - 2];
+            $serverData['maxplayers'] = $result[sizeof($result) - 1];
+            $serverData['motd'] = $this->cleanMotd($motd);;
+            $serverData['motd_raw'] = $motd;
+            $serverData['ping'] = $ping;
         }
         $this->disconnect($socket);
 
-        return $serverdata;
+        return $serverData;
     }
 
-    private function connect($host, $port)
+    private function connect(string $host, int $port)
     {
         $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if (!socket_connect($socket, $host, $port)) {
@@ -151,7 +153,7 @@ class MinecraftServerStatus
         return $socket;
     }
 
-    private function disconnect($socket)
+    private function disconnect($socket): void
     {
         if ($socket != null) {
             socket_close($socket);
@@ -180,11 +182,20 @@ class MinecraftServerStatus
         return $a;
     }
 
-    private function formatPlayer($player, $uuid)
+    private function formatPlayer($player, $uuid): array
     {
         return [
             'name' => $player,
             'uuid' => $uuid,
         ];
+    }
+
+    private function cleanMotd($motd): string
+    {
+        // Remove §
+        $motd = preg_replace("/(§.)/", "", $motd);
+
+        //Remove all special characters from a string
+        return preg_replace("/[^[:alnum:][:punct:] ]/", "", $motd);
     }
 }
