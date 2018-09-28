@@ -29,10 +29,5 @@ function fetchData (ip, port, version) {
 
         _("#app").innerHTML = output;
 
-      })
-      .error((e) => {
-        alert(e.message);
-        console.error(e);
       });
-
 }
