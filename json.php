@@ -26,7 +26,7 @@ if (isset($_GET['ip']) && !empty($_GET['ip'])) {
     if (!$response) {
         $json = array_merge($json, [
             'ip' => $ip.':'.$port,
-            'error' => true,
+            'success' => false,
             'error_msg' => 'Could not connect to server!',
         ]);
     } else {
@@ -42,13 +42,13 @@ if (isset($_GET['ip']) && !empty($_GET['ip'])) {
             'motd_raw' => $response['motd_raw'],
             'img' => isset($_GET['show_img']) && !empty($_GET['show_img']) && ($_GET['show_img'] == "true") ? $response['favicon'] : "IMAGE HIDDEN",
             'ping' => $response['ping'],
-            'error' => false,
+            'success' => true,
             'error_msg' => '',
         ]);
     }
 } else {
     $json = array_merge($json, [
-        'error' => true,
+        'success' => false,
         'error_msg' => 'no ip was set, please use \'?ip=SERVER_IP\' at the end of the url',
     ]);
 }

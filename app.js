@@ -9,13 +9,13 @@ function fetchData (ip, port, version) {
 
   const query = Object.keys(params)
       .map((k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]))
-      .join('&').replace('&', '?');
+      .join('&');
 
-  fetch(`/json/${ip}${query}`)
+  fetch(`/json/${ip}?${query}`)
       .then((r) => r.json())
       .then((data) => {
 
-        if(data.error) {
+        if(!data.success) {
           _("#app").innerHTML = `<h1>Error: ${data.error_msg}</h1>`;
           return;
         }
