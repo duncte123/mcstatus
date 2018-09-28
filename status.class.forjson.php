@@ -66,6 +66,8 @@ class MinecraftServerStatus
             } else */
 
             if (isset($data->players) && !empty($data->players->sample)) {
+                var_dump($data->players);
+                die();
                 //                for ($i = 0; $plist = $data->players->sample[$i]->name; $i++) {
                 foreach ($data->players->sample as $player) {
 
