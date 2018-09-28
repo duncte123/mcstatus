@@ -1,5 +1,6 @@
 <?php
 use MinecraftServerStatus\DuncteMinecraftServerStatus;
+use MinecraftServerStatus\MinecraftServerStatus;
 
 require (__DIR__ . '/vendor/autoload.php');
 
@@ -20,8 +21,8 @@ if (strpos($ip, ':') !== false) {
     $ip = $contend[0];
     $port = $contend[1];
 }
-$query = new DuncteMinecraftServerStatus();
-$response = $query->getStatus($ip, $port);
+//$query = new DuncteMinecraftServerStatus();
+$response = MinecraftServerStatus::query($ip, $port);
 
 if (!$response) {
     respond([
