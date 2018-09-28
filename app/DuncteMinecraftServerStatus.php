@@ -1,6 +1,6 @@
 <?php
 
-namespace MinecraftServerStatus;
+namespace DuncteMinecraftServerStatus;
 
 use MinecraftServerStatus\Packets\HandshakePacket;
 use MinecraftServerStatus\Packets\PingPacket;
@@ -98,7 +98,7 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
             'playerlist' => $onlinePlayers,
             'max_players' => $data->players->max ?? false,
             'description' => $description,
-            'description_parsed' => $this->cleanMotd($descriptionRaw),
+//            'description_parsed' => $this->cleanMotd($descriptionRaw),
             'description_raw' => $descriptionRaw,
             'favicon' => $data->favicon ?? false,
             'modinfo' => $data->modinfo ?? false,

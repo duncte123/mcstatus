@@ -1,5 +1,5 @@
 <?php
-use MinecraftServerStatus\DuncteMinecraftServerStatus;
+use DuncteMinecraftServerStatus\DuncteMinecraftServerStatus;
 use MinecraftServerStatus\MinecraftServerStatus;
 
 require (__DIR__ . '/vendor/autoload.php');
@@ -21,8 +21,9 @@ if (strpos($ip, ':') !== false) {
     $ip = $contend[0];
     $port = $contend[1];
 }
-//$query = new DuncteMinecraftServerStatus();
-$response = MinecraftServerStatus::query($ip, $port);
+$query = new DuncteMinecraftServerStatus();
+$response = $query->getStatus($ip, $port);
+//$response = MinecraftServerStatus::query($ip, $port);
 
 if (!$response) {
     respond([
@@ -45,6 +46,7 @@ respond([
     'img' => isset($_GET['show_img']) && !empty($_GET['show_img']) && ($_GET['show_img'] == "true")
         ? $response['favicon'] : "IMAGE HIDDEN",
     'ping' => $response['ping'],
+    'modinfo' => $response['modinfo'],
 ]);
 
 function respond(array $json): void
