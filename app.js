@@ -39,6 +39,7 @@ function fetchData (ip, port, version) {
             `;
 
         for(let player of data.playerlist) {
+          console.log(player);
           output += `Name: <strong>${player.name}</strong>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; UUID: <strong>${player.uuid}</strong> <br />`;
         }
 
