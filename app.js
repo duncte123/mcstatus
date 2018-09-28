@@ -2,7 +2,6 @@ const _ = (el) => document.querySelectorAll(el);
 
 function fetchData (ip, port, version) {
   const params = {
-    ip: ip,
     port: port,
     version: version,
     show_img: true,
@@ -12,11 +11,14 @@ function fetchData (ip, port, version) {
       .map((k) => encodeURIComponent(k) + "=" + encodeURIComponent(params[k]))
       .join('&').replace('&', '?');
 
-  console.log(`Debug: ${query}`);
-
-  fetch(`/json/${query}`)
+  fetch(`/json/${ip}${query}`)
       .then((r) => r.json())
       .then((data) => {
+
+        if(data.error) {
+          _("#app").innerHTML = `<h1>Error: ${data.error_msg}</h1>`;
+          return;
+        }
 
         let output = `
             <img width="64" height="64" src="${data.img}" /> <br />
