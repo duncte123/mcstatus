@@ -40,15 +40,19 @@ class MinecraftServerStatus
             socket_read($socket, 1);
             $ping = round((microtime(true) - $start) * 1000); //calculate the high five duration
             $packetlength = $this->read_packet_length($socket);
+
             if ($packetlength < 0) {
                 return false;
             }
+
             socket_read($socket, 1);
             $packetlength = $this->read_packet_length($socket);
             $data = socket_read($socket, $packetlength, PHP_NORMAL_READ);
+
             if (!$data) {
                 return false;
             }
+
             $data = json_decode($data);
             $serverdata['version'] = $data->version->name;
             $serverdata['protocol'] = $data->version->protocol;
@@ -56,9 +60,12 @@ class MinecraftServerStatus
             $serverdata['data'] = $data;
             $serverdata['maxplayers'] = $data->players->max;
             $playersArray = [];
-            if ($serverdata['players'] == 0) {
+
+            /*if ($serverdata['players'] == 0) {
                 array_push($playersArray, ['It looks like nobody is online right now!']);
-            } else if (isset($data->players->sample) && !empty($data->players->sample)) {
+            } else */
+
+            if (isset($data->players->sample) && !empty($data->players->sample)) {
 //                for ($i = 0; $plist = $data->players->sample[$i]->name; $i++) {
                 foreach ($data->players->sample as $player) {
 
@@ -72,10 +79,12 @@ class MinecraftServerStatus
                     array_push($playersArray, $this->formatPlayer($player->name, $player->id));
                 }
             } else {
-                array_push($playersArray, ["Unfortunately, this server is hiding their player list."]);
+                array_push($playersArray, "Unfortunately, this server is hiding their player list.");
             }
+
             $serverdata['playerlist'] = $playersArray;
-            if (!isset($data->description->text) && empty($data->description->text)) {
+
+            if (!isset($data->description->text) || empty($data->description->text)) {
                 $motd = $data->description;
                 $motd2 = $data->description;
             } else {
@@ -86,13 +95,14 @@ class MinecraftServerStatus
             $motd = preg_replace("/(§.)/", "", $motd);
             $motd = preg_replace("/[^[:alnum:][:punct:] ]/", "", $motd);
             $serverdata['motd'] = $motd;
-            // $serverdata['motd_raw'] = $data->description;
             $serverdata['motd_raw'] = $motd2;
-            //$serverdata['favicon'] = $data->favicon;
+
             if (!empty($data->favicon)) {
                 $serverdata['favicon'] = $data->favicon;
             }
+
             $serverdata['ping'] = $ping;
+
         } else {
             $start = microtime(true);
             socket_send($socket, "\xFE\x01", 2, 0);

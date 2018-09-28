@@ -40,7 +40,7 @@ if (isset($_GET['ip']) && !empty($_GET['ip'])) {
             'maxplayers' => $response['maxplayers'],
             'motd' => $response['motd'],
             'motd_raw' => $response['motd_raw'],
-            'img' => !empty($_GET['show_img']) && isset($_GET['show_img']) && ($_GET['show_img'] == "true") ? $response['favicon'] : "IMAGE HIDDEN",
+            'img' => isset($_GET['show_img']) && !empty($_GET['show_img']) && ($_GET['show_img'] == "true") ? $response['favicon'] : "IMAGE HIDDEN",
             'ping' => $response['ping'],
             'error' => false,
             'error_msg' => '',
