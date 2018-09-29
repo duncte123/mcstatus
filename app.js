@@ -20,8 +20,13 @@ function fetchData (ip, port) {
       .join('&');
 
   fetch(`/json/${ip}?${query}`)
+      .catch((e) => {
+        _("#app").innerHTML = `<h1>Error: <em>${e.message}</em></h1>`;
+        console.error(e);
+      })
       .then((r) => r.json())
       .then((data) => {
+
         if (!data.success) {
           _("#app").innerHTML = `<h1>Error: <em>${data.error_msg}</em></h1>`;
           return;
@@ -51,3 +56,23 @@ function fetchData (ip, port) {
 
       });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const vars = {};
+  window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+    vars[key] = value;
+  });
+
+  const ip = vars.ip || undefined;
+  const port = vars.port || 25565;
+
+  if(typeof ip === "undefined") {
+    _("#app").innerHTML = "No ip was set <br />please use \"?ip=&lt;server ip&gt;\" at the end of the url<br />";
+    return;
+  }
+
+  _("title").innerHTML = ip;
+
+  fetchData(ip, port);
+});
