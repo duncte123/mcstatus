@@ -136,6 +136,12 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
         return $a;
     }
 
+    /**
+     * @param $player
+     * @param $uuid
+     *
+     * @return array
+     */
     private function formatPlayer($player, $uuid): array
     {
         return [
