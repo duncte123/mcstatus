@@ -50,6 +50,7 @@ respond([
 
 function respond(array $json): void
 {
+    header('Contend-Type: application/json', true);
     echo json_encode($json);
     die();
 }
