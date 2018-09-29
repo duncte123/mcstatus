@@ -8,18 +8,6 @@ use MinecraftServerStatus\Packets\PingPacket;
 
 class DuncteMinecraftServerStatus extends MinecraftServerStatus
 {
-    private $timeout;
-
-    /**
-     * MinecraftServerStatus constructor.
-     *
-     * @param int $timeout
-     */
-    public function __construct(int $timeout = 2)
-    {
-        $this->timeout = $timeout;
-    }
-
     /**
      * @param string $host
      * @param int    $port

@@ -13,7 +13,6 @@ if (!isset($_GET['ip']) || empty($_GET['ip'])) {
 
 $ip = $_GET['ip'];
 $port = $_GET['port'] ?? 25565;
-$version = $_GET['version'] ?? "1.8";
 
 if (strpos($ip, ':') !== false) {
     $contend = explode(':', $ip);

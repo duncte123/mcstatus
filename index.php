@@ -2,14 +2,13 @@
 
 if (!isset($_GET['ip']) || empty($_GET['ip'])) {
 
-    $output = "no ip was set <br />";
-    $output .= "please use '?ip=&lt;serverip&gt;' at the end of the url<br />";
-    die($output);
+    echo 'no ip was set <br />';
+    echo 'please use "?ip=&lt;serverip&gt;" at the end of the url<br />';
+    die();
 }
 
 $ip = $_GET['ip'];
 $port = $_GET['port'] ?? 25565;
-$version = $_GET['version'] ?? "1.8";
 
 if (strpos($ip, ':') !== false) {
     $contend = explode(':', $ip);
@@ -33,7 +32,7 @@ if (strpos($ip, ':') !== false) {
         <script src="/app.js"></script>
         <script>
           document.addEventListener("DOMContentLoaded", () => {
-            fetchData("<?php echo $ip; ?>", <?php echo $port; ?>, "<?php echo $version; ?>");
+            fetchData("<?php echo $ip; ?>", <?php echo $port; ?>);
           });
         </script>
     </body>

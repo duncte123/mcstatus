@@ -8,10 +8,10 @@ function _ (el) {
   return elements;
 }
 
-function fetchData (ip, port, version) {
+function fetchData (ip, port) {
   const params = {
     port: port,
-    version: version,
+    version: "1.8",
     show_img: true,
   };
 
