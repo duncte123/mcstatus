@@ -83,6 +83,10 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
 
                 array_push($onlinePlayers, $this->formatPlayer($player->name, $player->id));
             }
+
+            if(empty($data->players->sample) && $playerCount > 0) {
+                $onlinePlayers = false;
+            }
         }
 
         return [
