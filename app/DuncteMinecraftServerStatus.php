@@ -55,6 +55,7 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
         $data = json_decode($data);
 
         $descriptionRaw = $data->description ?? false;
+        $descriptionParsed = $descriptionRaw;
         $description = $descriptionRaw;
 
         // colorize the description if it is supported
@@ -62,15 +63,22 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
             $description = '';
 
             if (isset($descriptionRaw->text)) {
-                $color = isset($descriptionRaw->color) ? $descriptionRaw->color : '';
-                $description = '<span style="color: '.$color.';">'.$descriptionRaw->text.'</span>';
+                $description = [
+                    'color' => $descriptionRaw->color ?? '',
+                    'text' => $descriptionRaw->text ?? ''
+                ];
             }
 
             if (isset($descriptionRaw->extra)) {
+                $description = [];
+                $descriptionParsed = '';
                 foreach ($descriptionRaw->extra as $item) {
-                    $description .= isset($item->bold) && $item->bold ? '<b>' : '';
-                    $description .= isset($item->color) ? '<span style="color: '.$item->color.';">'.$item->text.'</span>' : '';
-                    $description .= isset($item->bold) && $item->bold ? '</b>' : '';
+                    $descriptionParsed .= $item->text ?? '';
+                    $description[] = [
+                        'bold' => $item->bold ?? false,
+                        'color' => $item->color ?? '',
+                        'text' => $item->text ?? '',
+                    ];
                 }
             }
         }
@@ -78,15 +86,15 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
         $playerCount = $data->players->online ?? 0;
         $onlinePlayers = [];
 
-        foreach ($data->players->sample as $player) {
-
-            if (empty($player)) continue;
-
-            array_push($onlinePlayers, $this->formatPlayer($player->name, $player->id));
-        }
-
-        if (empty($data->players->sample) && $playerCount != 0) {
+        if (!isset($data->players->sample)) {
             $onlinePlayers = false;
+        } else {
+            foreach ($data->players->sample as $player) {
+
+                if (empty($player)) continue;
+
+                array_push($onlinePlayers, $this->formatPlayer($player->name, $player->id));
+            }
         }
 
         return [
@@ -99,7 +107,7 @@ class DuncteMinecraftServerStatus extends MinecraftServerStatus
             'playerlist' => $onlinePlayers,
             'max_players' => $data->players->max ?? false,
             'description' => $description,
-            'description_parsed' => $this->cleanMotd($descriptionRaw),
+            'description_parsed' => $this->cleanMotd($descriptionParsed),
             'description_raw' => $descriptionRaw,
             'favicon' => $data->favicon ?? false,
             'modinfo' => $data->modinfo ?? false,
